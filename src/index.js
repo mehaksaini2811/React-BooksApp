@@ -1,18 +1,29 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import "./styles.css";
+import FetchData from "./FetchData";
+import axios from "axios";
 
 function App() {
   const apiURL = "https://www.anapioficeandfire.com/api/books?pageSize=30";
+  const [books, setBooks] = useState(null);
+
+  const fetchData = async e => {
+    e.preventDefault();
+    await axios.get(apiURL).then(res => setBooks(res.data));
+    console.log(books);
+  };
 
   return (
     <div className="App">
       <h1>Game of Thrones Books</h1>
       <h2>Fetch a list from an API and display it</h2>
 
-      {/* Fetch data from API */}
+      {/* <FetchData url={apiURL} /> */}
       <div>
-        <button className="fetch-button">Fetch Data</button>
+        <button className="fetch-button" onClick={fetchData}>
+          Fetch Data
+        </button>
         <br />
       </div>
 
@@ -20,17 +31,23 @@ function App() {
 
       {/* Use JSX below for each book */}
       <div className="books">
-        <div className="book">
-          <h3>Book Number</h3>
-          <h2>Book Name</h2>
-
-          <div className="details">
-            <p>👨: Author/Authors</p>
-            <p>📖: Number of pages</p>
-            <p>🏘️: Book Country</p>
-            <p>⏰: Release date</p>
-          </div>
-        </div>
+        {books &&
+          books.map((book, index) => {
+            const cleanedDate = new Date(book.released).toDateString();
+            const authors = book.authors.join(", ");
+            return (
+              <div className="book">
+                <h3>Book {index + 1}</h3>
+                <h2>book.name</h2>
+                <div className="details">
+                  <p>👨: {authors}</p>
+                  <p>📖: {book.numberOfPages}</p>
+                  <p>🏘️: {book.country}</p>
+                  <p>⏰: {cleanedDate}</p>
+                </div>
+              </div>
+            );
+          })}
       </div>
     </div>
   );
